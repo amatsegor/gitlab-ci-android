@@ -14,6 +14,8 @@ ENV ANDROID_SDK_ROOT "/sdk"
 ENV ANDROID_NDK_HOME "/ndk"
 ENV PATH "$PATH:${ANDROID_SDK_ROOT}/bin"
 
+ENV KOTLIN_VERSION "1.7.10"
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update && apt-get install -y locales \
@@ -25,16 +27,12 @@ ENV LANG en_US.UTF-8
 # as openjdk-8-jdk can provide all requirements and will be used anyway
 RUN apt-get install -qqy --no-install-recommends \
     apt-utils \
-    openjdk-8-jdk \
     openjdk-11-jdk \
     checkstyle \
     unzip \
     curl \
-    cmake \
-    lldb \
-    git \
-    ninja-build \
-    build-essential \
+    wget \
+    git-core \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # pre-configure some ssl certs
@@ -67,8 +65,13 @@ RUN ${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager --update --sdk_root=${ANDRO
 RUN while read -r pkg; do PKGS="${PKGS}${pkg} "; done < /sdk/pkg.txt && \
     ${ANDROID_SDK_ROOT}/cmdline-tools/bin/sdkmanager ${PKGS} --sdk_root=${ANDROID_SDK_ROOT}
 
-# uncomment in case NDK is needed
+# Kotlin/Native compiler
+RUN wget -q -O /kotlin_native.tar.gz https://download.jetbrains.com/kotlin/native/builds/releases/${KOTLIN_VERSION}/linux-x86_64/kotlin-native-prebuilt-linux-x86_64-${KOTLIN_VERSION}.tar.gz && \
+    mkdir -p ~/.konan/kotlin-native-prebuilt-linux-x86_64-${KOTLIN_VERSION} && \
+    tar -zxvf /kotlin_native.tar.gz -C /root/.konan/kotlin-native-prebuilt-linux-x86_64-${KOTLIN_VERSION} && \
+    rm -v /kotlin_native.tar.gz
 
+# uncomment in case NDK is needed
 #RUN mkdir /tmp/android-ndk && \
 #    cd /tmp/android-ndk && \
 #    curl -s -O https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux-x86_64.zip && \
