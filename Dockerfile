@@ -1,7 +1,6 @@
 #
-# inovex GitLab CI: Android v1.0
-# https://hub.docker.com/r/inovex/gitlab-ci-android/
-# https://www.inovex.de
+# GitLab CI: Android v1.0
+# https://hub.docker.com/r/amatsehor/gitlab-ci-android/
 # For JDK 11 (Gradle 7+) use: before_script: - export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 # For JDK 8: before_script: - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 #
@@ -15,7 +14,7 @@ ENV ANDROID_SDK_ROOT "/sdk"
 ENV ANDROID_NDK_HOME "/ndk"
 ENV PATH "$PATH:${ANDROID_SDK_ROOT}/bin"
 
-ENV DEBIAN_FRONTEND=noninteractive 
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update && apt-get install -y locales \
 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
@@ -29,11 +28,6 @@ RUN apt-get install -qqy --no-install-recommends \
     openjdk-8-jdk \
     openjdk-11-jdk \
     checkstyle \
-    libc6-i386 \
-    lib32stdc++6 \
-    lib32gcc1 \
-    lib32ncurses6 \
-    lib32z1 \
     unzip \
     curl \
     cmake \
@@ -48,9 +42,7 @@ RUN rm -f /etc/ssl/certs/java/cacerts; \
     /var/lib/dpkg/info/ca-certificates-java.postinst configure
 
 # Install Google's repo tool version 1.23 (https://source.android.com/setup/build/downloading#installing-repo)
-RUN curl -o /usr/local/bin/repo https://storage.googleapis.com/git-repo-downloads/repo \
- && echo "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 /usr/local/bin/repo" | sha256sum --strict -c - \
- && chmod a+x /usr/local/bin/repo
+RUN curl -o /usr/local/bin/repo https://storage.googleapis.com/git-repo-downloads/repo && chmod a+x /usr/local/bin/repo
 
 # download and unzip latest command line tools
 RUN export CMD_LINE_TOOLS_VERSION="$(curl -s https://developer.android.com/studio/index.html | grep -oP 'commandlinetools-linux-\K\d+' | uniq)" && \
