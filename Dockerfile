@@ -35,6 +35,8 @@ RUN apt-get install -qqy --no-install-recommends \
     git-core \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN echo "Contents of .konan folder:" && ls ~/.konan/
+
 # pre-configure some ssl certs
 RUN rm -f /etc/ssl/certs/java/cacerts; \
     /var/lib/dpkg/info/ca-certificates-java.postinst configure
